@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import { Router, Route } from "react-router-dom";
+import { Router, Route, Redirect, Switch } from "react-router-dom";
 import createBrowserHistory from 'history/createBrowserHistory'
 import Layout from '@/components/Layout'
 import Home from '@/views/Home';
 import About from '@/views/About';
-import Page1 from '@/views/Home/Page1'
 
 const customHistory = createBrowserHistory()
 
@@ -25,16 +24,19 @@ class RoutePage extends Component {
     return (
       <Router history={customHistory}>
         <Layout routes={routes}  history={customHistory}>
-          {routes.map((route, index) => {
-            return (
-              <Route
-                key={index}
-                exact={route.exact}
-                path={route.link}
-                component={route.component}
-              />
-            );
-          })}
+          <Switch>
+            {routes.map((route, index) => {
+              return (
+                <Route
+                  key={index}
+                  exact={route.exact}
+                  path={route.link}
+                  component={route.component}
+                />
+              );
+            })}
+            <Redirect from="/" to="/home"/>
+          </Switch>
         </Layout>
       </Router>
     )

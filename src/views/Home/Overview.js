@@ -4,7 +4,7 @@ class Page1 extends Component {
   render() {
     return (
       <div>
-        page1
+        概览页面
       </div>
     );
   }

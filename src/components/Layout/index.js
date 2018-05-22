@@ -10,7 +10,7 @@ class index extends Component {
   };
   componentWillMount() {
     const path = this.props.history.location.pathname;
-    const rootPath = path.split("/")[1];
+    const rootPath = path.split("/")[1] || 'home';
     this.setState({
       rootPath: `/${rootPath}`
     });

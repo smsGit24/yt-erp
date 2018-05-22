@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { Router, Route, NavLink } from "react-router-dom";
-import { Layout, Menu, Breadcrumb, Icon } from "antd";
+import { Router, Route, NavLink, Redirect, Switch } from "react-router-dom";
+import { Layout, Menu } from "antd";
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
 
@@ -9,24 +9,24 @@ class PageNav extends Component {
     childPath: "",
     breadcrumbs: []
   };
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.location.pathname !== this.props.location.pathname) {
+      this.setBreadcrumbs(nextProps)
+    }
+  }
   componentWillMount() {
-    const path = this.props.history.location.pathname;
-    const breadcrumbs = path.split("/");
-    breadcrumbs.shift();
+    this.setBreadcrumbs(this.props)
+  }
+  setBreadcrumbs = (props) => {
+    const {location, routes} = props
+    const path = location.pathname
+    const childPath = (routes && routes.filter(route => route.link === path)[0]) ? path : routes[0].link
     this.setState({
-      childPath: path,
-      breadcrumbs
+      childPath
     });
   }
-  menuSelect = ({ key }) => {
-    const breadcrumbs = key.split("/");
-    breadcrumbs.shift();
-    this.setState({
-      breadcrumbs
-    });
-  };
   render() {
-    const { routes, history } = this.props;
+    const { routes, history, redirect } = this.props;
     const { childPath, breadcrumbs } = this.state;
     return (
       <Layout style={{ flex: 1 }}>
@@ -54,15 +54,7 @@ class PageNav extends Component {
             </Menu>
           )}
         </Sider>
-        <Layout style={{ padding: "0 24px 24px" }}>
-          <Breadcrumb style={{ margin: "16px 0" }}>
-            {breadcrumbs &&
-              breadcrumbs.map((breadcrumb, index) => {
-                return (
-                  <Breadcrumb.Item key={index}>{breadcrumb}</Breadcrumb.Item>
-                );
-              })}
-          </Breadcrumb>
+        <Layout style={{ padding: "0 0 0 24px" }}>
           <Content
             style={{
               background: "#fff",
@@ -71,17 +63,20 @@ class PageNav extends Component {
               minHeight: 280
             }}
           >
-            {routes &&
-              routes.map((route, index) => {
-                return (
-                  <Route
-                    key={index}
-                    exact={route.exact}
-                    path={route.link}
-                    component={route.component}
-                  />
-                );
-              })}
+            <Switch>
+              {routes &&
+                routes.map((route, index) => {
+                  return (
+                    <Route
+                      key={index}
+                      exact={route.exact}
+                      path={route.link}
+                      component={route.component}
+                    />
+                  );
+                })}
+              <Redirect from="/home" to={redirect}/>
+            </Switch>
           </Content>
         </Layout>
       </Layout>
